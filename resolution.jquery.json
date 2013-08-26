@@ -1,0 +1,29 @@
+{
+"name": "create",
+"title": "jQuery Resolution",
+"description": "jQuery plugin for testing different screen resolutions.",
+"keywords": [
+	"responsive",
+	"resolution",
+	"testing"
+],
+"version": "1.0.0",
+"author": {
+	"name": "ern0",
+	"url": "http://linkbroker.hu/"
+},
+"licenses": [
+{
+"type": "MIT",
+"url": "https://github.com/jquery/jquery-color/blob/2.1.2/MIT-LICENSE.txt"
+}
+],
+"bugs": "https://github.com/ern0/jquery.resolution/issues",
+"homepage": "https://github.com/ern0/jquery.resolution",
+"demo": "http://linkbroker.hu/stuff/jquery.resolution/",
+"docs": "https://github.com/ern0/jquery.resolution/wiki",
+"download": "https://github.com/ern0/jquery.resolution/archive/master.zip",
+"dependencies": {
+	"jquery": ">=1.5"
+}
+}
