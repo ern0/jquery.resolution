@@ -1,4 +1,4 @@
-// jquery.resolution.js - 2013.08.26
+// jquery.resolution.js - 2013.08.27
 
 
 (function($) {
