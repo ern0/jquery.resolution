@@ -49,6 +49,7 @@
 				var w = $(window).width();
 				var h = $(window).height();
 			
+				$(".resolution").removeClass("resolution-selected");			
 				cb(false,w,h);	
 			
 			},self.dly); // setTimeout()
