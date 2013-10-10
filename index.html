@@ -10,7 +10,6 @@
 <!-- CSS -------------------------------------------------------------->	
 	<style media="all" type="text/css">
 body {
-	color: #220000;
 	background: #999999;
 	margin: 0;
 	padding: 0;
@@ -20,6 +19,20 @@ body {
 }	
 #screen {
 	background: #ffffff;
+	padding: 2px;
+}
+#noti {
+	font-family: courier;
+	font-weight: bold;
+	position: fixed;
+	opacity: 0.9;
+	bottom: 4px;
+	left: 4px;
+	margin: 0;
+	border: 2px solid #665544;
+	padding: 4px;
+	background: #ddccaa;	
+	color: #442200;
 }
 table.resolution {
 	opacity: 0.8;
@@ -47,6 +60,9 @@ td.resolution {
 	background: #666666;
 	color: #ffeeee;
 }
+body, p, h1, h2, code {
+	color: #442222;
+}
 em, code {
 	background: #eeeeee;
 	padding: 2px;
@@ -55,10 +71,31 @@ em, code {
 	font-size: 1.1em;
 	border: 1px solid #dddddd;
 }
+h1 {
+	color: #aa2222;
+	display: inline;
+	font-size: 1.4em;
+	text-indent: 0;
+	font-weight: bold;
+	margin: 0 0 8px 2px;
+}
+h2 {
+	font-size: 1.1em;
+	text-indent: 0;
+	font-weight: bold;
+	margin: 6px 0 4px 0;
+}
+p {
+	text-indent: 4px;
+	margin: 0 0 8px 0;
+	
+}
 code {
 	display: block;
 	margin-left: 8px;
-	width: 80%;
+	margin-top: 2px;
+	margin-bottom: 4px;
+	width: 90%;
 }
 .footer {
 	border-top: 1px solid #cccccc;
@@ -72,25 +109,29 @@ code {
 	<body>
 
 		<div id="screen">
-
+			
+			<div id="noti"> </div>
+			
 			<p>
-				<b>jQuery.Resolution</b> 
+				<h1>jQuery.Resolution</h1> 
 				is a simple tool to test different resolutions
-				in a browser window.
+				in a vanilla browser.
 				It supports testing high device-pixel-ratio
 				devices (e.g. retina iPhone).
 			</p>
 	
-			<p>
-				<b>Usage</b>
-			</p>
+			<h2>
+				Usage
+			</h2>
 			<p>
 				Apply it on the jQuery element, which represents the screen:
-				<code>
-					$("#screen").resolution(true,
-					<br />&nbsp;
-					//...
-				</code>
+			</p>
+			<code>
+				$("#screen").resolution(true,
+				<br />&nbsp;
+				//...
+			</code>
+			<p>
 				It will display 
 				a floating bar 
 				on the right bottom part of the document,
@@ -101,119 +142,137 @@ code {
 			<p>
 				The second parameter is an array of items.
 				If item array has only one element, it is a heder:
-				<code>
-					&nbsp;
-					[
-					<br />&nbsp; &nbsp;
-					[ "smartphone" ],
-					<br />&nbsp; &nbsp;
-					//...
-				</code>
-				Otherwise, it is a resolution definition:
-				<code>
-					&nbsp; &nbsp;
-					[ "standard",320,480,1,true ],
-					<br />&nbsp; &nbsp;
-					[ "modern",800,480,1,true ],
-					<br />&nbsp; &nbsp;
-					//...
-				</code>
-				Elements are: <i>name, width, height</i> (can be swapped),
-				<i>device-pixel-ratio</i> (1 for normal, 2 for retina)
-				and <i>rotate</i>.
-				If the rotate parameter is <em>true</em>,
+			</p>			
+			<code>
+				&nbsp;
+				[
+				<br />&nbsp; &nbsp;
+				[ "smartphone" ],
+				<br />&nbsp; &nbsp;
+				//...
+			</code>
+			<p>
+			Otherwise, it is a resolution definition:
+			</p>
+			<code>
+				&nbsp; &nbsp;
+				[ "standard",320,480,1,true, 2 ],
+				<br />&nbsp; &nbsp;
+				[ "modern",800,480,1,true ],
+				<br />&nbsp; &nbsp;
+				//...
+			</code>
+			<p>
+				Fields are: <i>name, width, height</i> (can be swapped),
+				<i>device-pixel-ratio</i> (1 for normal, 2 for retina),
+				<i>rotate</i> and <i>initial mark</i>.
+				If the rotate field is <em>true</em>,
 				the item will generate two buttons: portrait and landscape.
+				The <i>initial mark</i> should be used
+				to select initial resolution and orientation,
+				<em>1</em> for portrait, <em>2</em> for landscape.
+				If none of the resolution has marked with it,
+				full browser window size will apply.
 			</p>
 			<p>
 				The third parameter is the callback:
-				<code>
-					],function(width,height,dpr,test) {
-					<br />&nbsp;
-						// put your code here
-					<br />
-					}
-				</code>
+			</p>
+			<code>
+				],function(width,height,dpr,test) {
+				<br />&nbsp;
+					// put your code here
+				<br />
+				}
+			</code>
+			<p>
 				It will be called by 4 reasons:
 				at startup, on window resize, on orientation change
 				(so you should use this callback instead of 
 				<em>$(window).resize()</em>),
-				and selecting a resolution on the bar.	
-				The last one comes with <i>test</i> parameter set to <i>true</i>.
+				and (if the bar is turned on) selecting a resolution on the bar.	
+				The last case 
+				callback comes with <i>test</i> argument set to <i>true</i>.
 			</p>
 			<p>
 				Note, that requested <i>width</i> may be decreased by the
 				size of the scrollbar.
-				(This is not true for height,
-				because vertical scrollbar is disabled.)
 			</p>
 			<p>
 				Also, there is an optional fourth parameter,
-				which defines attenuation time (ms) for window-resize,
-				avoid repainting the app on every little mouse move
-				during window resizing. Default value is 200 ms.
+				which defines attenuation time (ms) for window-resize detection,
+				avoid firing callback too often
+				which leads repainting the app 
+				on every little mouse move during window resizing. 
+				Default value is 200 ms.
 			</p>
 	
-			<p>
-				<b>Example</b>
-			</p>
+			<h2>
+				Example
+			</h2>
 			<p>
 				Full example (used on this page):
-				<br/>
-				<code>
-					$("#screen").resolution(true,[
-						<br />&nbsp;					
-						[ "smartphone" ],
-						<br />&nbsp;					
-						[ "cheap",320,240,1,true ],
-						<br />&nbsp;					
-						[ "standard",320,480,1,true ],
-						<br />&nbsp;					
-						[ "modern",800,480,1,true ],
-						<br />&nbsp;					
-						[ "mot/sony",854,480,1,true ],
-						<br />&nbsp;					
-						[ "premium",960,540,1,true ],
-						<br />&nbsp;					
-						[ "retina" ],
-						<br />&nbsp;					
-						[ "iphone",960,640,2,true ],
-						<br />&nbsp;					
-						[ "iphone5",1136,640,2,true ],
-						<br />&nbsp;					
-						[ "tablet" ],
-						<br />&nbsp;					
-						[ "ipad",1024,768,1,true ],
-						<br />&nbsp;					
-						[ "retina",2048,1536,2,true ],
-						<br />&nbsp;					
-						[ "netbook" ],
-						<br />&nbsp;					
-						[ "cheap",1024,576,1,false ],
-						<br />&nbsp;					
-						[ "value",1024,600,1,false ],
-						<br />&nbsp;					
-						[ "notebook" ],
-						<br />&nbsp;					
-						[ "wide",1366,768,1,false ],
-						<br />&nbsp;					
-						[ "notebook",1280,800,1,false ],
-						<br />					
-					],function(width,height,dpr,test) {
-						<br />									
+			</p>
+			<code>
+				$("#screen").resolution(true,[
+					<br />&nbsp;					
+					[ "smartphone" ],
+					<br />&nbsp;					
+					[ "cheap",320,240,1,true ],
+					<br />&nbsp;					
+					[ "standard",320,480,1,true ],
+					<br />&nbsp;					
+					[ "modern",800,480,1,true, 2 ], // init: landscape
+					<br />&nbsp;					
+					[ "mot/sony",854,480,1,true ],
+					<br />&nbsp;					
+					[ "premium",960,540,1,true ],
+					<br />&nbsp;					
+					[ "retina" ],
+					<br />&nbsp;					
+					[ "iphone",960,640,2,true ],
+					<br />&nbsp;					
+					[ "iphone5",1136,640,2,true ],
+					<br />&nbsp;					
+					[ "tablet" ],
+					<br />&nbsp;					
+					[ "ipad",1024,768,1,true ],
+					<br />&nbsp;					
+					[ "retina",2048,1536,2,true ],
+					<br />&nbsp;					
+					[ "netbook" ],
+					<br />&nbsp;					
+					[ "cheap",1024,576,1,false ],
+					<br />&nbsp;					
+					[ "value",1024,600,1,false ],
+					<br />&nbsp;					
+					[ "notebook" ],
+					<br />&nbsp;					
+					[ "wide",1366,768,1,false ],
+					<br />&nbsp;					
+					[ "notebook",1280,800,1,false ],
+					<br />					
+				],function(width,height,dpr,test) {
+					<br />									
+					<br />&nbsp;
+					showNotification( 
+						<br />&nbsp;&nbsp;
+						"width=" + width + 
+						<br />&nbsp;&nbsp;
+						"height=" + height + 
+						<br />&nbsp;&nbsp;
+						"dpr=" + dpr + 
+						<br />&nbsp;&nbsp;
+						"test=" + test
 						<br />&nbsp;
-						alert("w=" + width + " h=" + height + " dpr=" + dpr + " test=" + test);
-						<br />					
-						<br />										
-					});				
-				</code>
-			</p>
-			<p>
-				The content of the <em>#result</em> span is: <span id="result">(enable JS)</span>
-			</p>	
+					);
+					<br />					
+					<br />										
+				});				
+			</code>
 			
-			<p>
-				<b>Styling</b>
-			</p>
+			<h2>
+				Styling
+			</h2>
 			<p>
 				The floating bar is a <i>table</i>.
 				The <em>resolution</em> style class is added to
@@ -236,8 +295,8 @@ code {
 		$("#screen").resolution(true,[
 			[ "smartphone" ],
 			[ "cheap",320,240,1,true ],
-			[ "standard",320,480,1,true ],
-			[ "modern",800,480,1,true ],
+			[ "standard",320,480,1,true],
+			[ "modern",800,480,1,true, 2 ],  // init mark
 			[ "mot/sony",854,480,1,true ],
 			[ "premium",960,540,1,true ],
 			[ "retina" ],
@@ -247,11 +306,22 @@ code {
 			[ "cheap",1024,576,1,false ],
 			[ "value",1024,600,1,false ]
 		],function(width,height,dpr,test) {
-			if (typeof(notfirstrun) == "undefined") {
-				notfirstrun = true;
-			} else {
-				alert("w=" + width + " h=" + height + " dpr=" + dpr + " test=" + test);
+		
+			$("#noti").html(
+				"width=" + width + "<br />" +
+				" height=" + height + "<br />" +
+				" dpr=" + dpr + "<br />" +
+				" test=" + test
+			).show();
+			
+			if (typeof(notiTimeout) != "undefined") {
+				clearTimeout(notiTimeout);
 			}
+			
+			notiTimeout = setTimeout(function() {
+				$("#noti").fadeOut(200);
+			},4000);
+			
 		});
 
 	</script>	
