@@ -1,4 +1,4 @@
-// jquery.resolution.js - 2013.08.27
+// jquery.resolution.js - 2013.08.28
 
 
 (function($) {
@@ -8,10 +8,16 @@
 		var self = $.fn.resolution;
 		
 		
-		function cb(test,w,h,r) {
+		function cb(test,w,h,r,t) {
 		
-			var dpr = window.devicePixelRatio;
+			var dpr = r;
+			if (typeof(dpr) == "undefined") dpr = window.devicePixelRatio;
 			if (typeof(dpr) == "undefined") dpr = 1;
+			
+			var touch = t;
+			if (typeof(touch) == "undefined") {
+				touch = !!('ontouchstart' in window) || !!('onmsgesturechange' in window);
+			}
 			
 			if (typeof(w) == "undefined") w = $(window).width();
 			if (typeof(h) == "undefined") h = $(window).height();
@@ -25,17 +31,13 @@
 			diz.width(w);
 			diz.height(h);
 			diz.css("overflow-x","hidden");
-			diz.css("overflow-y","scroll");
+			diz.css("overflow-y","auto");
 			
-			callback.call(diz,diz.get(0).clientWidth,h,dpr,test);
+			callback.call(diz,diz.get(0).clientWidth,h,dpr,touch,test);
 
 		} // cb()
 		
-		
-		$(document).ready(function() {
-			cb(false);
-		});
-		
+		var initial = null;	
 		
 		self.tim = null;
 		self.dly = attenuate;
@@ -48,7 +50,7 @@
 			
 				var w = $(window).width();
 				var h = $(window).height();
-			
+
 				$(".resolution").removeClass("resolution-selected");			
 				cb(false,w,h);	
 			
@@ -56,8 +58,10 @@
 			
 		}); // $(window).resize()
 		
-		if (!show) return this;
-		
+		if (!show) {
+			cb(false);
+			return this;
+		}	
 
 		var itemCount = [];
 		var itemIndex = "&nbsp;";
@@ -88,6 +92,7 @@
 		var lastTop = "";
 		for (i in resolutionList) {
 			var item = resolutionList[i];
+			if (typeof(item[5]) == "undefined") item[5] = 0;
 			
 			if (typeof(item[1]) == "undefined") {
 			
@@ -121,6 +126,8 @@
 						var x = xx[ii];
 						(function(o,w,h,r,t,l,s) {
 							var td = document.createElement("TD");
+							if ((item[5] == 1) && (o == "P")) initial = $(td);
+							if ((item[5] == 2) && (o == "L")) initial = $(td);
 							td.className = "resolution resolution" + r;
 							td.innerHTML = o;
 							$(td).click(function() {
@@ -128,7 +135,7 @@
 								$(this).addClass("resolution-selected");
 								$("#resolution-" + l + "x" + s + "x" + r).addClass("resolution-selected");
 								$("#resolution-" + t).addClass("resolution-selected");
-								cb(true,w,h,r);
+								cb(true,w,h,r,true);
 							});							
 							row3.appendChild(td);
 						})(x[0],x[1],x[2],item[3],lastTop,l,s);
@@ -136,13 +143,15 @@
 
 				} else {  // if rotation
 
+					if (item[5] > 0) initial = $(td);
+					
 					td.rowSpan = 2;
 					(function(l,s,r,t) {
 						$(td).click(function() {
 							$(".resolution").removeClass("resolution-selected");
 							$(this).addClass("resolution-selected");
 							$("#resolution-" + t).addClass("resolution-selected");
-							cb(true,l,s,r);
+							cb(true,l,s,r,false);
 						});
 					})(l,s,item[3],lastTop);					
 					
@@ -156,6 +165,14 @@
 		table.appendChild(row3);
 			
 		this.before(table);
+
+		if (initial == null) {
+			$(document).ready(function() {		
+				cb(false);
+			});		
+		} else {
+			$(initial).trigger("click");
+		}
 		
 		return this;				
 	}; // $.fn.resulution()
